@@ -15,6 +15,7 @@ scripts/
 
 # files
 .env
+tests/realPlace.config.ts
 *.log
 *.tsbuildinfo
 coverage.json

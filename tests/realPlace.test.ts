@@ -5,20 +5,39 @@ import { ApiKeyCreds, Chain, ClobClient, OrderType, Side } from "../src";
 
 const TOKEN_ID = "16040015440196279900485035793550429453516625694844857319147506590755961451627";
 
+type Config = {
+    privateKey: string;
+    apiKey: string;
+    passphrase: string;
+    secret: string;
+    apiUrl: string;
+};
+
+let cfg: Config = {
+    privateKey: "",
+    apiKey: "",
+    passphrase: "",
+    secret: "",
+    apiUrl: "",
+};
+
+try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const loaded = require("./realPlace.config");
+    cfg = { ...cfg, ...(loaded.default || loaded) };
+} catch {
+    // no config provided; test will be skipped
+}
+
 describe("realPlace", () => {
     let client: ClobClient | undefined;
     beforeEach(() => {
-        const privateKey = process.env.PRIVATE_KEY || "";
-        const creds: ApiKeyCreds = {
-            key: process.env.CLOB_API_KEY || "",
-            passphrase: process.env.CLOB_PASSPHRASE || "",
-            secret: process.env.CLOB_SECRET || "",
-        };
-        const host = process.env.CLOB_API_URL || "";
+        const { privateKey, apiKey, passphrase, secret, apiUrl } = cfg;
+        const creds: ApiKeyCreds = { key: apiKey, passphrase, secret };
 
-        if (privateKey && creds.key && creds.passphrase && creds.secret && host) {
+        if (privateKey && apiKey && passphrase && secret && apiUrl) {
             const wallet = new Wallet(privateKey);
-            client = new ClobClient(host, Chain.POLYGON, wallet, creds);
+            client = new ClobClient(apiUrl, Chain.POLYGON, wallet, creds);
         }
     });
 
